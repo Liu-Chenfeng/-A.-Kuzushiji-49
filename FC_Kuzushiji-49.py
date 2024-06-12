@@ -10,7 +10,7 @@ import matplotlib.pyplot as plt
 from torchsummary import summary
 
 
-# 读取数据
+# 读取数据    Чтение данных
 X = np.load("C:\\Users\\lcf14\\Desktop\\k49-train-imgs.npz")['arr_0']
 X_test = np.load('C:\\Users\\lcf14\\Desktop\\k49-test-imgs.npz')['arr_0']
 
@@ -18,9 +18,10 @@ Y = np.load('C:\\Users\\lcf14\\Desktop\\k49-train-labels.npz')['arr_0']
 Y_test = np.load('C:\\Users\\lcf14\\Desktop\\k49-test-labels.npz')['arr_0']
 
 # 划分训练集和验证集 （评估模型性能；避免过拟合；选择最佳模型）
+# Различайте обучающие и тестовые наборы
 X_train, X_val, Y_train, Y_val = train_test_split(X, Y, test_size=0.1)
 
-# 归一化数据
+# 归一化数据    Нормализовать данные
 X_test = X_test.astype('float32')
 X_val = X_val.astype('float32')
 X_train = X_train.astype('float32')
@@ -37,7 +38,7 @@ X_train = torch.Tensor(X_train)
 Y_test = torch.Tensor(Y_test)
 Y_val = torch.Tensor(Y_val)
 Y_train = torch.Tensor(Y_train)
-print(X_train.shape)
+
 # 将图像数据调整为 MLP 所需的一维形状 [样本数, 特征数（高*宽）]
 IMG_ROWS = X_train.shape[1]
 IMG_COLS = X_train.shape[2]
@@ -53,6 +54,7 @@ Y_val = Y_val.type(torch.LongTensor)
 Y_train = Y_train.type(torch.LongTensor)
 
 # 创建数据集和数据加载器 （用TensorDataset将数据封装成数据集对象，过数据加载类DataLoader来批量加载数据）
+# Инкапсулируйте данные в объекты набора данных с помощью TensorDataset.
 batch_size = 80
 
 train_dataset = TensorDataset(X_train, Y_train)
@@ -115,6 +117,7 @@ train_counter = []
 train_losses = []
 
 # 使用加权损失函数
+# Функция взвешенных потерь используется для решения проблемы дисбаланса набора данных
 class_weights = compute_class_weight('balanced', classes=np.unique(Y_train), y=Y_train.numpy())
 class_weights = torch.tensor(class_weights, dtype=torch.float32).cuda()
 
@@ -197,16 +200,8 @@ print("Complete!")
 
 # 绘制学习曲线
 plt.figure(figsize=(10, 6))
-"""
-# 绘制训练与验证损失
-plt.subplot(1, 2, 1)
-plt.plot([float(v) for v in valid_loss_list], label='Validation Loss', color='darkorange')
-plt.plot([float(t) for t in test_loss_list], label='Test Loss', color='green')
-plt.legend()
-plt.title('Loss Evolution')
-"""
+
 # 绘制训练与验证准确率
-#plt.subplot(1, 1, 1)
 plt.plot([float(v) for v in valid_acc_list], label='Validation Accuracy', color='darkorange')
 plt.plot([float(t) for t in test_acc_list], label='Test Accuracy', color='green')
 plt.legend()
