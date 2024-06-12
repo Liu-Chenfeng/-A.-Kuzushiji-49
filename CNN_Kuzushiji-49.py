@@ -224,7 +224,6 @@ print("Complete!")
 plt.figure(figsize=(10, 6))
 
 # 绘制训练与验证准确率
-#plt.subplot(1, 2, 2)
 plt.plot([float(v) for v in valid_acc_list], label='Validation Accuracy', color='darkorange')
 plt.plot([float(t) for t in test_acc_list], label='Test Accuracy', color='green')
 plt.legend()
