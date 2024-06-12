@@ -151,7 +151,7 @@ print(summary(model, input_size=(1, 28, 28)))
 
 # 定义一个交叉熵损失函数
 loss_fn = nn.CrossEntropyLoss(weight=class_weights)
-# 随机梯度下降优化器（设置了学习率和动量参数）
+# 随机梯度下降优化器（设置了学习率和动量参数） Оптимизатор стохастического градиентного спуска
 optimizer = optim.SGD(model.parameters(), lr=0.01, momentum=0.9)
 
 
