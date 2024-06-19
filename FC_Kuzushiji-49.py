@@ -6,6 +6,7 @@ import numpy as np
 from sklearn.model_selection import train_test_split
 from torch.utils.data import TensorDataset, DataLoader
 from sklearn.utils.class_weight import compute_class_weight
+from sklearn.metrics import confusion_matrix, ConfusionMatrixDisplay
 import matplotlib.pyplot as plt
 from torchsummary import summary
 
@@ -160,11 +161,21 @@ for epoch in range(n_epochs):
                 count += len(labels)
                 val_loss /= len(data.dataset)
             acc /= count
-        #valid_loss_list.append(val_loss)
         valid_acc_list.append(acc.item() * 100)
         print("Validation accuracy: %.3f%%" % (acc * 100))
 
+        if epoch+1 == n_epochs:
+            cm_test = confusion_matrix(all_labels, all_preds)
+            fig, ax = plt.subplots(figsize=(45, 45))
+            disp_test = ConfusionMatrixDisplay(confusion_matrix=cm_test, display_labels=np.arange(cm_test.shape[0]))
+            disp_test.plot(ax=ax, cmap=plt.cm.Blues, xticks_rotation='vertical')
+            plt.title('FC Validation Confusion Matrix', fontsize=55)
+            plt.xlabel('Predicted Label', fontsize=35)
+            plt.ylabel('True Label', fontsize=35)
+            plt.savefig('FC_Validation_confusion_matrix.png', dpi=450, bbox_inches='tight')
+            plt.show()
 
+    
     def test(data):
         model.eval()
 
@@ -187,10 +198,20 @@ for epoch in range(n_epochs):
 
             test_loss /= len(data.dataset)
             test_accuracy = 100. * test_correct / total
-        #test_loss_list.append(test_loss)
         test_acc_list.append(test_accuracy)
         print("Test accuracy: %.3f%%" % (test_accuracy))
 
+        if epoch+1 == n_epochs:
+            cm_test = confusion_matrix(all_labels, all_preds)
+            fig, ax = plt.subplots(figsize=(45, 45))
+            disp_test = ConfusionMatrixDisplay(confusion_matrix=cm_test, display_labels=np.arange(cm_test.shape[0]))
+            disp_test.plot(ax=ax, cmap=plt.cm.Blues, xticks_rotation='vertical')
+            plt.title('FC Test Confusion Matrix', fontsize=55)
+            plt.xlabel('Predicted Label', fontsize=35)
+            plt.ylabel('True Label', fontsize=35)
+            plt.savefig('FC_Test_confusion_matrix.png', dpi=450, bbox_inches='tight')
+            plt.show()
+    
     training(train_dataloader)
     validation(validation_dataloader)
     test(test_dataloader)
