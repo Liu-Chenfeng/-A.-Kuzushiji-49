@@ -152,6 +152,8 @@ for epoch in range(n_epochs):
         acc = 0
         count = 0
         val_loss = 0
+        all_preds = []
+        all_labels = []
         with torch.no_grad():
             for inputs, labels in data:
                 inputs, labels = inputs.cuda(), labels.cuda()
@@ -159,7 +161,9 @@ for epoch in range(n_epochs):
                 val_loss += loss_fn(y_pred, labels).item()
                 acc += (torch.argmax(y_pred, 1) == labels).float().sum()
                 count += len(labels)
-                val_loss /= len(data.dataset)
+                all_labels.extend(labels.cpu().numpy())
+                all_preds.extend(torch.argmax(y_pred, 1).cpu().numpy())
+            val_loss /= len(data.dataset)
             acc /= count
         valid_acc_list.append(acc.item() * 100)
         print("Validation accuracy: %.3f%%" % (acc * 100))
@@ -182,7 +186,8 @@ for epoch in range(n_epochs):
         test_loss = 0
         test_correct = 0
         total = 0
-
+        all_preds = []
+        all_labels = []
         with torch.no_grad():
             for images, labels in data:
                 images = images.cuda()
@@ -195,7 +200,8 @@ for epoch in range(n_epochs):
                 _, predicted = outputs.max(1)
                 total += labels.size(0)
                 test_correct += predicted.eq(labels).sum().item()
-
+                all_preds.extend(predicted.cpu().numpy())
+                all_labels.extend(labels.cpu().numpy())
             test_loss /= len(data.dataset)
             test_accuracy = 100. * test_correct / total
         test_acc_list.append(test_accuracy)
